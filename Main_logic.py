@@ -6,21 +6,28 @@ EMPTY_CEIL = None
 
 def main():
     field = init_field(SIZE)
-    print_field(field)
+    player = FIRST_PLAYER_SYMBOL
+    current_player = get_symbol(input("Введите кто первый ходит (1 - 'O', 2 - 'X')\n"))
+    if player == 1:
+        result = "0"
+    if player == 2:
+        result = "x"
+
 
     while True:
-        player_step(field, FIRST_PLAYER_SYMBOL)
+        player_step(field)
         if is_win(field):
+            print(f"Выиграл {player}")
             break
-        print_field(field)
-        if  not has_empty_ceil:
+        if not get_symbol(val):
+            print(f"Ничья")
             break
+        player = "0" if player == "x" else "x"
 
         enemy_step(field, SECOND_PLAYER_SYMBOL)
         if is_win(field):
             break
-        print_field(field)
-        if  not has_empty_ceil:
+        if  not get_symbol(val):
             break
 
 
@@ -51,7 +58,7 @@ def show_field(field:str, cols=3):
 def player_step(field: list[list]):
     while True:
         try:
-            x = int(input("Введите x"))
+            x = int(input("Введите строку"))
         except ValueError:
             print("Введите еще раз")
             continue
@@ -59,7 +66,7 @@ def player_step(field: list[list]):
             print("Не правильно")
             continue
         try:
-            y = int(input("Введите y"))
+            y = int(input("Введите столбец"))
         except ValueError:
             print("Введите еще раз")
             continue
@@ -75,31 +82,16 @@ def player_step(field: list[list]):
         return cell_number
 
 
-def get_cell(field, cell_number):
+def get_ceil(field, cell_number):
     """Получаем ячейку"""
     return field[cell_number[0] - 1][cell_number[1] - 1]
 
 
-def has_empty_ceil(ceil_number,field) -> bool:
-    """
-    Проверка занятости конкретной ячейки
-
-    :param ceil_number:
-    :param field:
-    :return: Ячейка пустая или нет
-    """
-    for row in field:
-        for ceil in row:
-            if ceil is EMPTY_CEIL:
-                return True
-    return False
-
-
 def get_symbol(val):
     if val == 1:
-        return "x"
-    elif val == 2:
         return "0"
+    elif val == 2:
+        return "x"
     return EMPTY_CEIL
 
 
@@ -121,13 +113,14 @@ def is_win(field):
         [(0, 1), (1, 1), (2, 1)],
         [(0, 2), (1, 2), (2, 2)]
         ]
-        coord_1, coord_2, coord_3 = 0  # КАКИЕ КООРДИНАТЫ ЗДЕСЬ УКАЗАТЬ?
-        ceil_1 = get_ceil(fiel, coord_1)
-        ceil_2 = get_ceil(fiel, coord_2)
-        ceil_3 = get_ceil(fiel, coord_3)
 
+    for comb in win_comb:
+        ceil_1 = get_ceil(field, comb[0])
+        ceil_2 = get_ceil(field, comb[1])
+        ceil_3 = get_ceil(field, comb[2])
         if ceil_1 == ceil_2 == ceil_3 != EMPTY_CEIL:
             return True
+    return False
 
 
 if __name__ == '__main__':
