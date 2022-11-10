@@ -50,6 +50,7 @@ def show_field(field: list[list]) -> None:
 
 
 def player_step(field: list[list]):
+    """ Функция показывает ход игрока """
     while True:
         try:
             x = int(input("Введите строку\n"))
@@ -99,6 +100,7 @@ def get_symbol(val):
 
 
 def is_win(field:list[list]) -> bool:
+    """ Функция показывает есть ли выигрышные коомбинации """
     win_comb = [
         # По диагонали
         [(0, 0), (1, 1), (2, 2)],
