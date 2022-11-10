@@ -1,34 +1,28 @@
 SIZE = 3
-FIRST_PLAYER_SYMBOL = "0"
-SECOND_PLAYER_SYMBOL = "x"
+FIRST_PLAYER_SYMBOL = "x"
+SECOND_PLAYER_SYMBOL = "0"
 EMPTY_CEIL = None
 
 
 def main():
     field = init_field(SIZE)
     player = FIRST_PLAYER_SYMBOL
-    current_player = get_symbol(input("Введите кто первый ходит (1 - 'O', 2 - 'X')\n"))
-    if player == 1:
-        result = "0"
-    if player == 2:
-        result = "x"
-
-
+    current_player = get_symbol(input("Введите кто первый ходит (1 - 'x', 2 - '0')\n"))
+    if current_player == 1:
+        player = "x"
+    if current_player == 2:
+        player = "0"
     while True:
-        player_step(field)
+        step = player_step(field)
+        field[step[0]][step[1]] = player
+        show_field(field)
         if is_win(field):
             print(f"Выиграл {player}")
             break
-        if not get_symbol(val):
+        if not has_empty_ceil(field):
             print(f"Ничья")
             break
         player = "0" if player == "x" else "x"
-
-        enemy_step(field, SECOND_PLAYER_SYMBOL)
-        if is_win(field):
-            break
-        if  not get_symbol(val):
-            break
 
 
 def init_field(size: int = 3) -> list[list]:
@@ -41,24 +35,24 @@ def init_field(size: int = 3) -> list[list]:
     return field
 
 
-def show_field(field:str, cols=3):
+def show_field(field: list[list]) -> None:
     """
     Функция показывает состояние поля
     :param field: объект структуры поля
     :return: отображает поле в процессе игры
     """
-    for idx, val in enumerate(field):
-        if idx % cols != 0 or idx == 0:
-           print(f"|{get_symbol(val)}", end="")
-        else:
-            print(f"|\n{get_symbol(val)}", end="")
-    print("|")
+    for row in field:
+        for cell in row:
+            if cell is EMPTY_CEIL:
+                cell = " "
+            print(f"|{cell}", end="")
+        print("|")
 
 
 def player_step(field: list[list]):
     while True:
         try:
-            x = int(input("Введите строку"))
+            x = int(input("Введите строку\n"))
         except ValueError:
             print("Введите еще раз")
             continue
@@ -66,7 +60,7 @@ def player_step(field: list[list]):
             print("Не правильно")
             continue
         try:
-            y = int(input("Введите столбец"))
+            y = int(input("Введите столбец\n"))
         except ValueError:
             print("Введите еще раз")
             continue
@@ -87,19 +81,24 @@ def get_ceil(field, cell_number):
     return field[cell_number[0] - 1][cell_number[1] - 1]
 
 
+def has_empty_ceil(field):
+    """Проверка есть ли еще пустые ячейки"""
+    for row in field:
+        for cell in row:
+            if cell is EMPTY_CEIL:
+                return True
+    return False
+
+
 def get_symbol(val):
     if val == 1:
-        return "0"
-    elif val == 2:
         return "x"
+    elif val == 2:
+        return "0"
     return EMPTY_CEIL
 
 
-def enemy_step(field, player_symbol):
-    player_step(field, player_symbol)
-
-
-def is_win(field):
+def is_win(field:list[list]) -> bool:
     win_comb = [
         # По диагонали
         [(0, 0), (1, 1), (2, 2)],
